@@ -76,7 +76,7 @@ SHARED_CONTEXT = {
 
 DEFAULT_RULES = [
     "Do not invent facts.",
-    "Before generating each step output, check whether skills.md exists and use its latest content as the primary source for reusable workflow patterns. After each completed step, append only confirmed learnings to skills.md with a dated changelog entry. If skills.md conflicts with current confirmed inputs, prioritize current confirmed inputs and note the conflict.",
+    "Before generating each step output, check whether SKILL.md exists and use its latest content as the primary source for reusable workflow patterns. After each completed step, append only confirmed learnings to SKILL.md with a dated changelog entry. If SKILL.md conflicts with current confirmed inputs, prioritize current confirmed inputs and note the conflict.",
     "Use only provided input and prior step outputs.",
     "Keep outputs concise, practical, and reviewable.",
     "Use AI for drafting and analysis; final decisions stay with the team.",

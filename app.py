@@ -8,7 +8,7 @@ apply_global_styles()
 ensure_state()
 
 st.title("AI-Enabled Agile Java SDLC Workflow Prompt Generator")
-st.caption("Use the left Pages menu to open step_0(name) through step_6(name). No dropdown is used.")
+st.caption("Use the left Pages menu to open step_0(name) through step_6(name), plus generate_SKILL_file. No dropdown is used.")
 
 st.markdown("### Overall Progress")
 for step_key, config in STEP_CONFIG.items():
