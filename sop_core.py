@@ -4,13 +4,6 @@ from typing import Any, Dict, List
 
 import streamlit as st
 
-def save_current_prompt(SOP_OUTPUT_DIR, step_number):
-    with open(f"{SOP_OUTPUT_DIR}/prompt_step_{step_number}.md", 'w') as f:
-        f.write(f"## Step {step_number}\n\n")
-        for task in [step['tasks']]:  # assuming steps is a list of dictionaries
-            for t in task[0]:
-                f.write("- " + t + "\n")
-
 def apply_global_styles() -> None:
     st.markdown(
         """
@@ -178,10 +171,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "If input or alignment is weak, list the gaps clearly.",
             "Preserve traceability to the original story or request.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_1.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_1_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 1)
-
     },
     "step_2": {
         "name": "Clarify",
@@ -212,9 +204,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Include relevant non-functional requirements.",
             "Preserve traceability back to the story and acceptance criteria.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_2.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_2_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 2)
     },
     "step_3": {
         "name": "Design",
@@ -249,9 +241,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Reuse existing patterns and framework assets where possible.",
             "Preserve traceability to requirements and acceptance criteria.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_3.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_3_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 3)
     },
     "step_4": {
         "name": "Build",
@@ -290,9 +282,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Stay within scope.",
             "Use the Step 0 markdown style.",
             "Add **/target/ into .gitignore if not yet."
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_4.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_4_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 4)
     },
     "step_5": {
         "name": "Test",
@@ -323,9 +315,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Include file path suggestions.",
             "Preserve traceability to acceptance criteria and Xray evidence.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_5.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_5_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 5)
     },
     "step_6": {
         "name": "Release",
@@ -356,9 +348,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Identify rollback and validation ownership when relevant.",
             "Carry forward and summarize any placeholder or hard-coded items that still need review.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_6.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_6_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 6)
     },
 }
 
@@ -738,6 +730,9 @@ def render_step_page(step_key: str) -> None:
                 return
             st.session_state.generated_prompt_by_step[step_key] = build_prompt(step_key)
             st.session_state.done_flags[step_key] = True
+            save_info = config.get("save_current_prompt")
+            if save_info:
+                save_current_prompt(save_info[0], save_info[1], st.session_state.generated_prompt_by_step[step_key])
     with right_col:
         if st.button("Clear Current Step Fields", key=f"clear_{step_key}"):
             reset_step_fields(step_key)
