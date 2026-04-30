@@ -4,6 +4,12 @@ from typing import Any, Dict, List
 
 import streamlit as st
 
+def save_current_prompt(SOP_OUTPUT_DIR, step_number):
+    with open(f"{SOP_OUTPUT_DIR}/prompt_step_{step_number}.md", 'w') as f:
+        f.write(f"## Step {step_number}\n\n")
+        for task in [step['tasks']]:  # assuming steps is a list of dictionaries
+            for t in task[0]:
+                f.write("- " + t + "\n")
 
 def apply_global_styles() -> None:
     st.markdown(
@@ -174,6 +180,8 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Use the Step 0 markdown style.",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_1_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 1)
+
     },
     "step_2": {
         "name": "Clarify",
@@ -206,6 +214,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Use the Step 0 markdown style.",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_2_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 2)
     },
     "step_3": {
         "name": "Design",
@@ -242,6 +251,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Use the Step 0 markdown style.",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_3_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 3)
     },
     "step_4": {
         "name": "Build",
@@ -282,6 +292,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Add **/target/ into .gitignore if not yet."
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_4_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 4)
     },
     "step_5": {
         "name": "Test",
@@ -314,6 +325,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Use the Step 0 markdown style.",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_5_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 5)
     },
     "step_6": {
         "name": "Release",
@@ -346,6 +358,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Use the Step 0 markdown style.",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_6_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 6)
     },
 }
 
