@@ -67,6 +67,7 @@ h1, h2, h3 {
     )
 
 SOP_TITLE = "AI-Enabled Agile Java SDLC Workflow"
+SOP_OUTPUT_DIR = "AI_SOP_Instruction"
 
 SHARED_CONTEXT = {
     "team_context": "You are an AI delivery copilot for a SAFe Agile Java engineering team.",
@@ -172,7 +173,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Preserve traceability to the original story or request.",
             "Use the Step 0 markdown style.",
         ],
-        "save_to": "dev_step_1_output.md",
+        "save_to": f"{SOP_OUTPUT_DIR}/dev_step_1_output.md",
     },
     "step_2": {
         "name": "Clarify",
@@ -204,7 +205,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Preserve traceability back to the story and acceptance criteria.",
             "Use the Step 0 markdown style.",
         ],
-        "save_to": "dev_step_2_output.md",
+        "save_to": f"{SOP_OUTPUT_DIR}/dev_step_2_output.md",
     },
     "step_3": {
         "name": "Design",
@@ -240,7 +241,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Preserve traceability to requirements and acceptance criteria.",
             "Use the Step 0 markdown style.",
         ],
-        "save_to": "dev_step_3_output.md",
+        "save_to": f"{SOP_OUTPUT_DIR}/dev_step_3_output.md",
     },
     "step_4": {
         "name": "Build",
@@ -280,7 +281,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Use the Step 0 markdown style.",
             "Add **/target/ into .gitignore if not yet."
         ],
-        "save_to": "dev_step_4_output.md",
+        "save_to": f"{SOP_OUTPUT_DIR}/dev_step_4_output.md",
     },
     "step_5": {
         "name": "Test",
@@ -312,7 +313,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Preserve traceability to acceptance criteria and Xray evidence.",
             "Use the Step 0 markdown style.",
         ],
-        "save_to": "dev_step_5_output.md",
+        "save_to": f"{SOP_OUTPUT_DIR}/dev_step_5_output.md",
     },
     "step_6": {
         "name": "Release",
@@ -344,7 +345,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Carry forward and summarize any placeholder or hard-coded items that still need review.",
             "Use the Step 0 markdown style.",
         ],
-        "save_to": "dev_step_6_output.md",
+        "save_to": f"{SOP_OUTPUT_DIR}/dev_step_6_output.md",
     },
 }
 
