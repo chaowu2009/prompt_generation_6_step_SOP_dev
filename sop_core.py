@@ -240,7 +240,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Preserve traceability to requirements and acceptance criteria.",
             "Use the Step 0 markdown style.",
         ],
-        "save_to": "test_step_3_output.md",
+        "save_to": "dev_step_3_output.md",
     },
     "step_4": {
         "name": "Build",
