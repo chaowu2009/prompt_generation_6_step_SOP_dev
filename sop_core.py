@@ -265,6 +265,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Review-needed hard-coded or placeholder items",
         ],
         "rules": [
+            "Never create a file unless it contains complete, functional content. Do not create placeholder classes, stub methods with only a TODO body, empty config files, or empty directories. If a file cannot be fully implemented in the current step, skip it and note it as pending instead.",
             "No unnecessary refactoring.",
             "Keep code readable and production-oriented.",
             "Identify each code block with file path.",
