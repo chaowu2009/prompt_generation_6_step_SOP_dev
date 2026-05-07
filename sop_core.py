@@ -1,8 +1,53 @@
 import json
 import re
+from pathlib import Path
+from threading import Lock
 from typing import Any, Dict, List
 
 import streamlit as st
+
+
+VISIT_COUNTER_PATH = Path(__file__).resolve().parent / ".visit_counter.json"
+_visit_counter_lock = Lock()
+
+
+def _load_visit_count() -> int:
+    if not VISIT_COUNTER_PATH.exists():
+        return 0
+
+    try:
+        raw_data = json.loads(VISIT_COUNTER_PATH.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return 0
+
+    return int(raw_data.get("visit_count", 0))
+
+
+def _save_visit_count(visit_count: int) -> None:
+    VISIT_COUNTER_PATH.write_text(
+        json.dumps({"visit_count": visit_count}, indent=2),
+        encoding="utf-8",
+    )
+
+
+def ensure_visit_tracking() -> None:
+    if "visit_count" not in st.session_state:
+        st.session_state.visit_count = _load_visit_count()
+
+    if st.session_state.get("visit_registered"):
+        return
+
+    with _visit_counter_lock:
+        visit_count = _load_visit_count() + 1
+        _save_visit_count(visit_count)
+
+    st.session_state.visit_count = visit_count
+    st.session_state.visit_registered = True
+
+
+def render_visit_counter() -> None:
+    visit_count = st.session_state.get("visit_count", _load_visit_count())
+    st.sidebar.metric("Website visit counter", visit_count)
 
 def apply_global_styles() -> None:
     st.markdown(
@@ -400,6 +445,8 @@ def uses_fixed_input_mode(step_key: str) -> bool:
 
 
 def ensure_state() -> None:
+    ensure_visit_tracking()
+
     if "form_data" not in st.session_state:
         st.session_state.form_data = {step_key: {} for step_key in STEP_CONFIG.keys()}
 
@@ -711,6 +758,7 @@ def render_copy_button(step_key: str, text: str) -> None:
 def render_step_page(step_key: str) -> None:
     apply_global_styles()
     ensure_state()
+    render_visit_counter()
     config = STEP_CONFIG[step_key]
 
     st.title(f"{step_key}({config['name']})")
