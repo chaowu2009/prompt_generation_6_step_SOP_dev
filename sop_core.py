@@ -1,53 +1,8 @@
 import json
 import re
-from pathlib import Path
-from threading import Lock
 from typing import Any, Dict, List
 
 import streamlit as st
-
-
-VISIT_COUNTER_PATH = Path(__file__).resolve().parent / ".visit_counter.json"
-_visit_counter_lock = Lock()
-
-
-def _load_visit_count() -> int:
-    if not VISIT_COUNTER_PATH.exists():
-        return 0
-
-    try:
-        raw_data = json.loads(VISIT_COUNTER_PATH.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return 0
-
-    return int(raw_data.get("visit_count", 0))
-
-
-def _save_visit_count(visit_count: int) -> None:
-    VISIT_COUNTER_PATH.write_text(
-        json.dumps({"visit_count": visit_count}, indent=2),
-        encoding="utf-8",
-    )
-
-
-def ensure_visit_tracking() -> None:
-    if "visit_count" not in st.session_state:
-        st.session_state.visit_count = _load_visit_count()
-
-    if st.session_state.get("visit_registered"):
-        return
-
-    with _visit_counter_lock:
-        visit_count = _load_visit_count() + 1
-        _save_visit_count(visit_count)
-
-    st.session_state.visit_count = visit_count
-    st.session_state.visit_registered = True
-
-
-def render_visit_counter() -> None:
-    visit_count = st.session_state.get("visit_count", _load_visit_count())
-    st.sidebar.metric("Website visit counter", visit_count)
 
 def apply_global_styles() -> None:
     st.markdown(
@@ -216,9 +171,10 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "If input or alignment is weak, list the gaps clearly.",
             "Preserve traceability to the original story or request.",
             "Use the Step 0 markdown style.",
-            "Save this exact prompt to AI_SOP_Instruction/prompt_step_1.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_1_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 1)
+
     },
     "step_2": {
         "name": "Clarify",
@@ -249,9 +205,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Include relevant non-functional requirements.",
             "Preserve traceability back to the story and acceptance criteria.",
             "Use the Step 0 markdown style.",
-            "Save this exact prompt to AI_SOP_Instruction/prompt_step_2.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_2_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 2)
     },
     "step_3": {
         "name": "Design",
@@ -286,9 +242,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Reuse existing patterns and framework assets where possible.",
             "Preserve traceability to requirements and acceptance criteria.",
             "Use the Step 0 markdown style.",
-            "Save this exact prompt to AI_SOP_Instruction/prompt_step_3.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_3_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 3)
     },
     "step_4": {
         "name": "Build",
@@ -327,9 +283,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Stay within scope.",
             "Use the Step 0 markdown style.",
             "Add **/target/ into .gitignore if not yet."
-            "Save this exact prompt to AI_SOP_Instruction/prompt_step_4.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_4_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 4)
     },
     "step_5": {
         "name": "Test",
@@ -360,9 +316,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Include file path suggestions.",
             "Preserve traceability to acceptance criteria and Xray evidence.",
             "Use the Step 0 markdown style.",
-            "Save this exact prompt to AI_SOP_Instruction/prompt_step_5.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_5_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 5)
     },
     "step_6": {
         "name": "Release",
@@ -393,9 +349,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Identify rollback and validation ownership when relevant.",
             "Carry forward and summarize any placeholder or hard-coded items that still need review.",
             "Use the Step 0 markdown style.",
-            "Save this exact prompt to AI_SOP_Instruction/prompt_step_6.md",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_6_output.md",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 6)
     },
 }
 
@@ -445,8 +401,6 @@ def uses_fixed_input_mode(step_key: str) -> bool:
 
 
 def ensure_state() -> None:
-    ensure_visit_tracking()
-
     if "form_data" not in st.session_state:
         st.session_state.form_data = {step_key: {} for step_key in STEP_CONFIG.keys()}
 
@@ -758,7 +712,6 @@ def render_copy_button(step_key: str, text: str) -> None:
 def render_step_page(step_key: str) -> None:
     apply_global_styles()
     ensure_state()
-    render_visit_counter()
     config = STEP_CONFIG[step_key]
 
     st.title(f"{step_key}({config['name']})")
@@ -778,9 +731,6 @@ def render_step_page(step_key: str) -> None:
                 return
             st.session_state.generated_prompt_by_step[step_key] = build_prompt(step_key)
             st.session_state.done_flags[step_key] = True
-            save_info = config.get("save_current_prompt")
-            if save_info:
-                save_current_prompt(save_info[0], save_info[1], st.session_state.generated_prompt_by_step[step_key])
     with right_col:
         if st.button("Clear Current Step Fields", key=f"clear_{step_key}"):
             reset_step_fields(step_key)

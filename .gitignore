@@ -34,7 +34,6 @@ htmlcov/
 
 # Streamlit
 .streamlit/secrets.toml
-.visit_counter.json
 
 # OS/editor noise
 .DS_Store

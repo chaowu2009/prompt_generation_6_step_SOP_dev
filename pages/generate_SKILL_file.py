@@ -1,6 +1,6 @@
 import streamlit as st
 
-from sop_core import apply_global_styles, ensure_visit_tracking, render_copy_button, render_visit_counter
+from sop_core import apply_global_styles, render_copy_button
 
 
 PROMPT_TEXT = """You are a senior Java software architect, test automation architect, and GitHub Copilot adoption coach.
@@ -91,9 +91,7 @@ def ensure_generate_skill_state() -> None:
 st.set_page_config(page_title="generate_SKILL_file", layout="wide")
 
 apply_global_styles()
-ensure_visit_tracking()
 ensure_generate_skill_state()
-render_visit_counter()
 
 st.title("generate_SKILL_file")
 st.caption("Generate a repository-inspection prompt for creating SKILL.md in the root folder.")

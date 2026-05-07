@@ -1,12 +1,11 @@
 import streamlit as st
 
-from sop_core import STEP_CONFIG, apply_global_styles, ensure_state, render_visit_counter
+from sop_core import STEP_CONFIG, apply_global_styles, ensure_state
 
 st.set_page_config(page_title="AI-Enabled Agile Java SDLC Workflow", layout="wide")
 
 apply_global_styles()
 ensure_state()
-render_visit_counter()
 
 st.title("AI-Enabled Agile Java SDLC Workflow Prompt Generator")
 st.caption("Use the left Pages menu to open step_0(name) through step_6(name), plus generate_SKILL_file. No dropdown is used.")
