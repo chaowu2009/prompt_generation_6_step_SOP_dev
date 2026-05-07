@@ -134,9 +134,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Do not fix unrelated existing issues unless they are simple, safe, and directly helpful to the requested change.",
             "Highlight placeholders, fake/sample values, hard-coded usernames/passwords, URLs, IDs, names, links, and similar items in the summary whenever found.",
             "No secrets or sensitive production data.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_0.md"
         ],
         "save_to": "(no required output file)",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 0)
     },
     "step_1": {
         "name": "Define",
@@ -250,7 +250,8 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
     "step_4": {
         "name": "Build",
         "role": "Senior software developer",
-        "task": "Build working, production-ready code across all required languages and layers. Generate complete, compilable implementation that fulfills all acceptance criteria from Step 2. Output must be actual code, not design or pseudocode.",
+        "task": "Build working, production-ready code across all required languages and layers. Generate complete, compilable implementation that fulfills all acceptance criteria from Step 2."
+                + " Output must be actual code, not design or pseudocode.",
         "inputs": "dev_step_3_output.md",
         "optional_inputs": [
             "[repo structure/module paths]",

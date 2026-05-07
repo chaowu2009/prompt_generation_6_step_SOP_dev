@@ -150,7 +150,7 @@ The app displays these save targets in the UI:
 1. `step_0`: `(no required output file)`
 2. `step_1`: `dev_step_1_output.md`
 3. `step_2`: `dev_step_2_output.md`
-4. `step_3`: `test_step_3_output.md`
+4. `step_3`: `dev_step_3_output.md`
 5. `step_4`: `dev_step_4_output.md`
 6. `step_5`: `dev_step_5_output.md`
 7. `step_6`: `dev_step_6_output.md`
