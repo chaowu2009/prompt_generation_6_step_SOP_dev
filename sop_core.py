@@ -5,13 +5,6 @@ from typing import Any, Dict, List
 
 import streamlit as st
 
-def save_current_prompt(SOP_OUTPUT_DIR, step_number):
-    with open(f"{SOP_OUTPUT_DIR}/prompt_step_{step_number}.md", 'w') as f:
-        f.write(f"## Step {step_number}\n\n")
-        for task in [step['tasks']]:  # assuming steps is a list of dictionaries
-            for t in task[0]:
-                f.write("- " + t + "\n")
-
 def apply_global_styles() -> None:
     st.markdown(
         """
@@ -180,9 +173,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "If input or alignment is weak, list the gaps clearly.",
             "Preserve traceability to the original story or request.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_1.md"
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_1_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 1)
     },
     "step_2": {
         "name": "Clarify",
@@ -213,9 +206,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Include relevant non-functional requirements.",
             "Preserve traceability back to the story and acceptance criteria.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_2.md"
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_2_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 2)
     },
     "step_3": {
         "name": "Design",
@@ -250,9 +243,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Reuse existing patterns and framework assets where possible.",
             "Preserve traceability to requirements and acceptance criteria.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_3.md"
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_3_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 3)
     },
     "step_4": {
         "name": "Build",
@@ -295,10 +288,10 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Generate unit tests alongside production code in the same code block output. Unit tests must be complete, runnable, and validate core functionality and edge cases.",
             "Identify unit test files and test classes clearly with file paths (e.g., *Test.java, *.test.js).",
             "Unit tests must have the same production-ready quality as production code.",
-            "Add **/target/ into .gitignore if not yet."
+            "Add **/target/ into .gitignore if not yet.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_4.md"
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_4_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 4)
     },
     "step_5": {
         "name": "Test",
@@ -339,9 +332,10 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Preserve traceability to acceptance criteria and Xray evidence.",
             "Report any test failures with root cause analysis and corrective actions.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_5.md"
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_5_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 5)
+
     },
     "step_6": {
         "name": "Release",
@@ -372,9 +366,10 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Identify rollback and validation ownership when relevant.",
             "Carry forward and summarize any placeholder or hard-coded items that still need review.",
             "Use the Step 0 markdown style.",
+            "Save this exact prompt to AI_SOP_Instruction/prompt_step_6.md"            
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_6_output.md",
-        "save_current_prompt": (SOP_OUTPUT_DIR, 6)
+
     },
 }
 
