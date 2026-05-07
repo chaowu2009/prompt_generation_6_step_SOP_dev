@@ -1,8 +1,15 @@
 import json
+import os
 import re
 from typing import Any, Dict, List
 
 import streamlit as st
+
+def save_current_prompt(output_dir: str, step_number: int, prompt_text: str) -> None:
+    os.makedirs(output_dir, exist_ok=True)
+    file_path = os.path.join(output_dir, f"prompt_step_{step_number}.md")
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(prompt_text)
 
 def apply_global_styles() -> None:
     st.markdown(
@@ -135,6 +142,7 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "No secrets or sensitive production data.",
         ],
         "save_to": "(no required output file)",
+        "save_current_prompt": (SOP_OUTPUT_DIR, 0)
     },
     "step_1": {
         "name": "Define",
@@ -174,7 +182,6 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_1_output.md",
         "save_current_prompt": (SOP_OUTPUT_DIR, 1)
-
     },
     "step_2": {
         "name": "Clarify",
@@ -248,8 +255,8 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
     },
     "step_4": {
         "name": "Build",
-        "role": "Senior Java developer",
-        "task": "Turn Step 3 into implementation-ready code output and produce concrete code changes.",
+        "role": "Senior software developer",
+        "task": "Build working, production-ready code across all required languages and layers. Generate complete, compilable implementation that fulfills all acceptance criteria from Step 2. Output must be actual code, not design or pseudocode.",
         "inputs": "dev_step_3_output.md",
         "optional_inputs": [
             "[repo structure/module paths]",
@@ -261,20 +268,22 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "[reviewer corrections]",
         ],
         "outputs": [
-            "Code changes for affected layers",
+            "Production code changes for affected layers",
             "Complete compilable code snippets (not pseudocode) for each changed file",
+            "Unit tests for production code (JUnit, TestNG, or equivalent per language)",
             "Validation, exception handling, and logging updates",
             "Required config changes",
             "Branch name, commit message, and PR title suggestions",
             "Review-needed hard-coded or placeholder items",
         ],
         "rules": [
+            "PRIMARY FOCUS: Generate actual, working, compilable code for every file needed in all required languages (Java, JavaScript, HTML, CSS, XML, etc.). No design documents, pseudocode, TODOs, or stubs. Every code block must be production-ready and immediately usable.",
             "Never create a file unless it contains complete, functional content. Do not create placeholder classes, stub methods with only a TODO body, empty config files, or empty directories. If a file cannot be fully implemented in the current step, skip it and note it as pending instead.",
             "No unnecessary refactoring.",
             "Keep code readable and production-oriented.",
             "Identify each code block with file path.",
-            "Generate complete code blocks with proper language tags (for example: java, xml, yaml, properties, sql).",
-            "For each changed file, provide full method/class-level code needed to implement the change, including imports and signatures.",
+            "Generate complete code blocks with proper language tags (for example: java, javascript, html, css, xml, yaml, properties, sql).",
+            "For each changed file, provide full function/class/component-level code needed to implement the change, including all imports, dependencies, and signatures appropriate to the language.",
             "Do not return design-only text or pseudocode unless explicitly requested.",
             "Do not skip key imports or helper methods.",
             "Reuse existing framework components and patterns first.",
@@ -282,6 +291,9 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "Clearly summarize any fake, sample, placeholder, or hard-coded values found in the code output.",
             "Stay within scope.",
             "Use the Step 0 markdown style.",
+            "Generate unit tests alongside production code in the same code block output. Unit tests must be complete, runnable, and validate core functionality and edge cases.",
+            "Identify unit test files and test classes clearly with file paths (e.g., *Test.java, *.test.js).",
+            "Unit tests must have the same production-ready quality as production code.",
             "Add **/target/ into .gitignore if not yet."
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_4_output.md",
@@ -289,8 +301,8 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
     },
     "step_5": {
         "name": "Test",
-        "role": "Senior Java QA automation engineer",
-        "task": "Turn Step 4 into test assets and a validation plan.",
+        "role": "Senior QA automation engineer",
+        "task": "Generate integration, API, and UI test code. Execute all tests against the production code from Step 4. Provide complete test execution results, validation evidence, and quality gates confirmation.",
         "inputs": "dev_step_4_output.md",
         "optional_inputs": [
             "[repo-specific usage or deviations from Java/Cucumber/TestNG/Selenium/Xray stack]",
@@ -302,19 +314,29 @@ STEP_CONFIG: Dict[str, Dict[str, Any]] = {
             "[reviewer corrections]",
         ],
         "outputs": [
-            "Unit and API/integration test cases",
-            "UI tests only if needed; Gherkin only if explicitly requested",
-            "Test data examples and regression impact",
+            "Integration and API test cases (complete runnable code)",
+            "UI tests only if needed; Gherkin scenarios only if explicitly requested",
+            "Test data examples and regression impact analysis",
             "Quality risks, quality gates, and execution checklist",
+            "ACTUAL test execution results with pass/fail status for each test",
+            "Test coverage report and evidence of successful validation",
+            "Identified gaps between acceptance criteria and test coverage",
         ],
         "rules": [
-            "Prefer unit and API coverage over UI.",
-            "No Thread.sleep.",
+            "PRIMARY FOCUS: EXECUTE all generated tests and provide concrete results. This is a validation step, not just code generation.",
+            "Run tests against production code from Step 4. Show actual pass/fail results with full logs and details.",
+            "Include complete test execution logs, console output, test reports, or CI/CD results as evidence that tests actually ran.",
+            "For each test, verify it validates at least one acceptance criterion from Step 2.",
+            "Do NOT generate unit tests here—those are in Step 4. Focus on integration, API, and UI tests only.",
+            "Prefer API/integration coverage over UI unless UI is critical to acceptance criteria.",
+            "Generate complete test code (not pseudocode) in appropriate framework (Cucumber/TestNG/Selenium/Xray per stack).",
+            "No Thread.sleep()—use explicit waits and proper synchronization.",
             "Support parallel execution where applicable.",
             "Keep tests stable, maintainable, and parallel-safe.",
             "Use approved or masked test data only.",
-            "Include file path suggestions.",
+            "Include file path suggestions for each test file.",
             "Preserve traceability to acceptance criteria and Xray evidence.",
+            "Report any test failures with root cause analysis and corrective actions.",
             "Use the Step 0 markdown style.",
         ],
         "save_to": f"{SOP_OUTPUT_DIR}/dev_step_5_output.md",
@@ -729,8 +751,12 @@ def render_step_page(step_key: str) -> None:
                 st.error(f"Required input missing: {missing_display}")
                 st.session_state.done_flags[step_key] = False
                 return
-            st.session_state.generated_prompt_by_step[step_key] = build_prompt(step_key)
+            prompt_text = build_prompt(step_key)
+            st.session_state.generated_prompt_by_step[step_key] = prompt_text
             st.session_state.done_flags[step_key] = True
+            save_info = config.get("save_current_prompt")
+            if save_info:
+                save_current_prompt(save_info[0], save_info[1], prompt_text)
     with right_col:
         if st.button("Clear Current Step Fields", key=f"clear_{step_key}"):
             reset_step_fields(step_key)
